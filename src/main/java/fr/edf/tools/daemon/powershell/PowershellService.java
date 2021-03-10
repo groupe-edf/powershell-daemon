@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import fr.edf.tools.daemon.powershell.model.ExecutionResult;
+
 @Service
 public class PowershellService {
 
@@ -20,13 +22,16 @@ public class PowershellService {
      * Execute the given PowerShell command
      * 
      * @param command : the powershell command to execute
-     * @return
+     * @param encoded : flag to know if the input command is encoded or not
+     * 
+     * @return {@link ExecutionResult}
      */
-    public ExecutionResult executePsCommand(String command) {
+    public ExecutionResult executePsCommand(String command, boolean encoded) {
         String output;
         String error;
         Integer exitCode;
-        String uncompiledCommand = uncompilePs(command);
+        String uncompiledCommand = encoded ? uncompilePs(command) : command;
+        command = encoded ? command : compilePs(command);
         logger.info("Executing command {} ...", uncompiledCommand);
         if (!System.getProperty("os.name").contains("Windows")) {
             return new ExecutionResult(1, "", "PowerShell daemon is not installed on a Windows machine");
@@ -34,7 +39,7 @@ public class PowershellService {
         try {
             // Getting the version
             // Executing the command
-            Process powerShellProcess = Runtime.getRuntime().exec("powershell -encodedcommand" + command);
+            Process powerShellProcess = Runtime.getRuntime().exec("powershell -encodedcommand " + command);
             // Getting the results
             exitCode = powerShellProcess.waitFor();
             powerShellProcess.getOutputStream().close();
@@ -75,6 +80,17 @@ public class PowershellService {
     private String uncompilePs(String encodedPs) {
         byte[] cmd = Base64.getDecoder().decode(encodedPs);
         return new String(cmd, StandardCharsets.UTF_16LE);
+    }
+
+    /**
+     * Compile PowerShell script
+     * 
+     * @param psScript
+     * @return encoded PowerShell
+     */
+    private String compilePs(String psScript) {
+        byte[] cmd = psScript.getBytes(StandardCharsets.UTF_16LE);
+        return Base64.getEncoder().encodeToString(cmd);
     }
 
 }
