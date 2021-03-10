@@ -1,8 +1,9 @@
 package fr.edf.tools.daemon.powershell;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,7 @@ public class PowershellService {
         String uncompiledCommand = uncompilePs(command);
         logger.info("Executing command {} ...", uncompiledCommand);
         if (!System.getProperty("os.name").contains("Windows")) {
-            return new ExecutionResult(1, "",
-                    "PowerShell daemon is not installed on a Windows machine");
+            return new ExecutionResult(1, "", "PowerShell daemon is not installed on a Windows machine");
         }
         try {
             // Getting the version
@@ -55,22 +55,26 @@ public class PowershellService {
 
             return new ExecutionResult(exitCode, output, error);
 
-        } catch (IOException | InterruptedException e) {
-            logger.error("An unexpected exception occured when performing the command " + command, e);
-            return new ExecutionResult(1, "",
-                    "An unexpected exception occured when performing the command " + e.getMessage());
+        } catch (IOException e) {
+            logger.error(String.format(Constants.UNEXPECTED_ERROR_MESSAGE, command), e);
+            return new ExecutionResult(1, "", String.format(Constants.UNEXPECTED_ERROR_MESSAGE, e.getMessage()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error(String.format(Constants.UNEXPECTED_ERROR_MESSAGE, command), e);
+            return new ExecutionResult(1, "", String.format(Constants.UNEXPECTED_ERROR_MESSAGE, e.getMessage()));
         }
     }
 
     /**
-     * Compile PowerShell script
+     * Uncompile PowerShell command to make it readable<br>
+     * Used for loggers
      * 
      * @param encodedPs
-     * @return encoded PowerShell
+     * @return Decoded PowerShell command
      */
     private String uncompilePs(String encodedPs) {
         byte[] cmd = Base64.getDecoder().decode(encodedPs);
-        return new String(cmd, Charset.forName("UTF-16LE"));
+        return new String(cmd, StandardCharsets.UTF_16LE);
     }
 
 }
