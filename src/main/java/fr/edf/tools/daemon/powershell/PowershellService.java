@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 
 import fr.edf.tools.daemon.powershell.model.ExecutionResult;
 
+/**
+ * Service : Perform PowerShell actions
+ * 
+ * @author Mathieu Delrocq
+ *
+ */
 @Service
 public class PowershellService {
 
@@ -33,7 +39,7 @@ public class PowershellService {
         String uncompiledCommand = encoded ? uncompilePs(command) : command;
         command = encoded ? command : compilePs(command);
         logger.info("Executing command {} ...", uncompiledCommand);
-        if (!System.getProperty("os.name").contains("Windows")) {
+        if (!System.getProperty(Constants.OS_PROPERTY).contains(Constants.WINDOWS)) {
             return new ExecutionResult(1, "", "PowerShell daemon is not installed on a Windows machine");
         }
         try {
