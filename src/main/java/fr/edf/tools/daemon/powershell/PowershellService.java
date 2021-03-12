@@ -27,7 +27,7 @@ public class PowershellService {
     /**
      * Execute the given PowerShell command
      * 
-     * @param command : the powershell command to execute
+     * @param command : the PowerShell command to execute
      * @param encoded : flag to know if the input command is encoded or not
      * 
      * @return {@link ExecutionResult}
