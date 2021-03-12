@@ -1,4 +1,4 @@
-package fr.edf.tools.daemon.powershell;
+package fr.edf.tools.daemon.powershell.utils;
 
 public final class Constants {
     

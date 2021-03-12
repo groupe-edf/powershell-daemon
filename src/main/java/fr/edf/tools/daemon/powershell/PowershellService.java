@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import fr.edf.tools.daemon.powershell.model.ExecutionResult;
+import fr.edf.tools.daemon.powershell.utils.Constants;
 
 /**
  * Service : Perform PowerShell actions

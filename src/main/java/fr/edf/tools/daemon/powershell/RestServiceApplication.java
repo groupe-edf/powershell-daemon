@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -15,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+
+import fr.edf.tools.daemon.powershell.utils.Constants;
 
 /**
  * main() of Spring Boot application
@@ -36,12 +36,6 @@ public class RestServiceApplication {
             logger.info(token);
             logger.info("");
             logger.info("#######################################################");
-            List<String> argsList = new ArrayList<>();
-            for (String arg : args) {
-                argsList.add(arg);
-            }
-            argsList.add(token);
-            args = argsList.toArray(new String[0]);
             SpringApplication.run(RestServiceApplication.class, args);
         } catch (IOException e) {
             logger.error("An error occured during the start of powershell-daemon", e);
