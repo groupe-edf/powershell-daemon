@@ -14,5 +14,8 @@ public final class Constants {
 
     /** os.name */
     public static final String OS_PROPERTY = "os.name";
+    
+    /** token.txt */
+    public static final String TOKEN_FILE = "token.txt";
 
 }
