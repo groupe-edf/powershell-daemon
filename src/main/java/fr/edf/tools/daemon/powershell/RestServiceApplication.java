@@ -29,6 +29,7 @@ public class RestServiceApplication {
 
     public static void main(String[] args) {
         try {
+            // Get or generate api token
             String token = getToken();
             logger.info("#######################################################");
             logger.info("");
@@ -36,7 +37,15 @@ public class RestServiceApplication {
             logger.info(token);
             logger.info("");
             logger.info("#######################################################");
+
+            // Set application properties
+            System.setProperty(Constants.CONTEXT_PATH_PROPERTY_NAME, Constants.CONTEXT_PATH);
+            System.setProperty(Constants.TOKEN_HEADER_NAME_PROP, Constants.TOKEN_HEADER_NAME);
+            System.setProperty(Constants.TOKEN_HEADER_VALUE_PROP, token);
+
+            // Run application
             SpringApplication.run(RestServiceApplication.class, args);
+
         } catch (IOException e) {
             logger.error("An error occured during the start of powershell-daemon", e);
         }

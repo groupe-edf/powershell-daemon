@@ -1,7 +1,6 @@
 package fr.edf.tools.daemon.powershell.auth;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,15 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import fr.edf.tools.daemon.powershell.utils.Constants;
+
 @Configuration
 @EnableWebSecurity
 @Order(1)
 public class APISecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${yourapp.http.auth-token-header-name}")
+    @Value("${powershell-daemon.http.auth-token-header-name}")
     private String principalRequestHeader;
 
-    @Value("${yourapp.http.auth-token}")
+    @Value("${powershell-daemon.http.auth-token}")
     private String principalRequestValue;
 
     @Override
@@ -41,7 +42,7 @@ public class APISecurityConfig extends WebSecurityConfigurerAdapter {
             }
         });
         httpSecurity.
-            antMatcher("/api/**").
+            antMatcher(Constants.CONTEXT_PATH + "/**").
             csrf().disable().
             sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
             and().addFilter(filter).authorizeRequests().anyRequest().authenticated();
