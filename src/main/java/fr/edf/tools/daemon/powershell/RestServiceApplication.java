@@ -39,9 +39,7 @@ public class RestServiceApplication {
             logger.info("#######################################################");
             logger.info("The token should be filled in the header parameter '" + Constants.TOKEN_HEADER_NAME + "'.");
 
-            // Set application properties
-            System.setProperty(Constants.CONTEXT_PATH_PROPERTY_NAME, Constants.CONTEXT_PATH);
-            System.setProperty(Constants.TOKEN_HEADER_NAME_PROP, Constants.TOKEN_HEADER_NAME);
+            // Set token in application properties
             System.setProperty(Constants.TOKEN_HEADER_VALUE_PROP, token);
 
             // Run application

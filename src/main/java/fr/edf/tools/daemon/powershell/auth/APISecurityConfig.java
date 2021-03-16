@@ -12,8 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
-import fr.edf.tools.daemon.powershell.utils.Constants;
-
 @Configuration
 @EnableWebSecurity
 @Order(1)
@@ -33,19 +31,16 @@ public class APISecurityConfig extends WebSecurityConfigurerAdapter {
             @Override
             public Authentication authenticate(Authentication authentication) throws AuthenticationException {
                 String principal = (String) authentication.getPrincipal();
-                if (!principalRequestValue.equals(principal))
-                {
+                if (!principalRequestValue.equals(principal)) {
                     throw new BadCredentialsException("The API key was not found or not the expected value.");
                 }
                 authentication.setAuthenticated(true);
                 return authentication;
             }
         });
-        httpSecurity.
-            antMatcher("/**").
-            csrf().disable().
-            sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-            and().addFilter(filter).authorizeRequests().anyRequest().authenticated();
+        httpSecurity.antMatcher("/**").csrf().disable().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().addFilter(filter).authorizeRequests()
+                .anyRequest().authenticated();
     }
 
 }

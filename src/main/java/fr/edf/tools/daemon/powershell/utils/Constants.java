@@ -28,7 +28,7 @@ public final class Constants {
     public static final String TOKEN_HEADER_NAME_PROP = "powershell-daemon.http.auth-token-header-name";
 
     /** token */
-    public static final String TOKEN_HEADER_NAME = "token";
+    public static final String TOKEN_HEADER_NAME = "Token";
 
     /** powershell-daemon.http.auth-token */
     public static final String TOKEN_HEADER_VALUE_PROP = "powershell-daemon.http.auth-token";
