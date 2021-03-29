@@ -15,6 +15,7 @@ public class PowershellCommand {
     private final String command;
 
     public PowershellCommand(boolean encoded, String command) {
+        super();
         this.encoded = encoded;
         this.command = command;
     }

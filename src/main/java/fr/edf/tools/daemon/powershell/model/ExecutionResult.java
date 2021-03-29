@@ -18,6 +18,7 @@ public class ExecutionResult {
     private final String error;
 
     public ExecutionResult(Integer code, String output, String error) {
+        super();
         this.exitCode = code;
         this.output = output;
         this.error = error;
