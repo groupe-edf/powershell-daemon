@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import fr.edf.tools.daemon.powershell.model.ExecutionResult;
+import fr.edf.tools.daemon.powershell.model.User;
 import fr.edf.tools.daemon.powershell.utils.Constants;
 
 /**
@@ -24,6 +25,46 @@ import fr.edf.tools.daemon.powershell.utils.Constants;
 public class PowershellService {
 
     private static final Logger logger = LoggerFactory.getLogger(PowershellService.class);
+
+    private boolean doesUserExist(String username) {
+        ExecutionResult result = executePsCommand(String.format(Constants.CHECK_USER_EXIST, username), false);
+        return result.getOutput().trim().contentEquals(username);
+    }
+
+    private boolean doesWorkdirExist(String username) {
+        ExecutionResult result = executePsCommand(String.format(Constants.CHECK_WORKDIR_EXIST, username), false);
+        return Boolean.valueOf(result.getOutput());
+    }
+
+    /**
+     * Create the given user and add it to "Remote Management Users"
+     * 
+     * @param user : {@link User} to create
+     * @return {@link ExecutionResult}
+     */
+    public ExecutionResult createUser(User user) {
+        String username = user.getUsername();
+        executePsCommand(String.format(Constants.CREATE_USER, username, user.getPassword(), username), false);
+        if (!doesUserExist(username)) {
+            return new ExecutionResult(1, "", "The user " + username + " does not exist after creation");
+        }
+        return executePsCommand(
+                String.format(Constants.ADD_USER_TO_GROUP, Constants.REMOTE_MANAGEMENT_USERS_GROUP, user.getUsername()),
+                false);
+    }
+
+    public ExecutionResult deleteUser(String username) {
+        executePsCommand(String.format(Constants.STOP_USER_PROCESS, username), false);
+        executePsCommand(String.format(Constants.DELETE_USER, username), false);
+        if (doesUserExist(username)) {
+            return new ExecutionResult(1, "", "The user " + username + " still exist after deletion");
+        }
+        executePsCommand(String.format(Constants.REMOVE_WORKDIR, username), false);
+        if (doesWorkdirExist(username)) {
+            return new ExecutionResult(1, "", "The user " + username + " still exist after deletion");
+        }
+        return new ExecutionResult(0, "User \" + username + \" completely deleted", "");
+    }
 
     /**
      * Execute the given PowerShell command
