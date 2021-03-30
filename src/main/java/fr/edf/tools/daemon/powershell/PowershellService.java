@@ -26,14 +26,24 @@ public class PowershellService {
 
     private static final Logger logger = LoggerFactory.getLogger(PowershellService.class);
 
-    private boolean doesUserExist(String username) {
-        ExecutionResult result = executePsCommand(String.format(Constants.CHECK_USER_EXIST, username), false);
-        return result.getOutput().trim().contentEquals(username);
+    /**
+     * Get username if exist
+     * 
+     * @param username
+     * @return
+     */
+    public ExecutionResult getUsername(String username) {
+        return executePsCommand(String.format(Constants.CHECK_USER_EXIST, username), false);
     }
 
-    private boolean doesWorkdirExist(String username) {
-        ExecutionResult result = executePsCommand(String.format(Constants.CHECK_WORKDIR_EXIST, username), false);
-        return Boolean.valueOf(result.getOutput());
+    /**
+     * Get workdir name of the given user if exist
+     * 
+     * @param username
+     * @return
+     */
+    public ExecutionResult getWorkdirName(String username) {
+        return executePsCommand(String.format(Constants.CHECK_WORKDIR_EXIST, username), false);
     }
 
     /**
@@ -43,27 +53,59 @@ public class PowershellService {
      * @return {@link ExecutionResult}
      */
     public ExecutionResult createUser(User user) {
-        String username = user.getUsername();
-        executePsCommand(String.format(Constants.CREATE_USER, username, user.getPassword(), username), false);
-        if (!doesUserExist(username)) {
-            return new ExecutionResult(1, "", "The user " + username + " does not exist after creation");
-        }
         return executePsCommand(
-                String.format(Constants.ADD_USER_TO_GROUP, Constants.REMOTE_MANAGEMENT_USERS_GROUP, user.getUsername()),
+                String.format(Constants.CREATE_USER, user.getUsername(), user.getPassword(), user.getUsername()),
                 false);
     }
 
+    /**
+     * Add the given user to the given group
+     * 
+     * @param username
+     * @param groupname
+     * @return
+     */
+    public ExecutionResult addUserToGroup(String username, String groupname) {
+        return executePsCommand(String.format(Constants.ADD_USER_TO_GROUP, groupname, username), false);
+    }
+
+    /**
+     * Stop all process for the given user
+     * 
+     * @param username
+     * @return
+     */
+    public ExecutionResult stopUserProcess(String username) {
+        return executePsCommand(String.format(Constants.STOP_USER_PROCESS, username), false);
+    }
+
+    /**
+     * Delete the user with the given username
+     * 
+     * @param username
+     * @return
+     */
     public ExecutionResult deleteUser(String username) {
-        executePsCommand(String.format(Constants.STOP_USER_PROCESS, username), false);
-        executePsCommand(String.format(Constants.DELETE_USER, username), false);
-        if (doesUserExist(username)) {
-            return new ExecutionResult(1, "", "The user " + username + " still exist after deletion");
-        }
-        executePsCommand(String.format(Constants.REMOVE_WORKDIR, username), false);
-        if (doesWorkdirExist(username)) {
-            return new ExecutionResult(1, "", "The user " + username + " still exist after deletion");
-        }
-        return new ExecutionResult(0, "User \" + username + \" completely deleted", "");
+        return executePsCommand(String.format(Constants.DELETE_USER, username), false);
+    }
+
+    /**
+     * Delete the workir of the given username
+     * 
+     * @param username
+     * @return
+     */
+    public ExecutionResult deleteUserWorkdir(String username) {
+        return executePsCommand(String.format(Constants.REMOVE_WORKDIR, username), false);
+    }
+
+    /**
+     * List all users
+     * 
+     * @return
+     */
+    public ExecutionResult listUsers() {
+        return executePsCommand(Constants.LIST_USERS, false);
     }
 
     /**

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.edf.tools.daemon.powershell.PowershellService;
@@ -30,14 +31,29 @@ public class PowershellStandardController {
         return psService.createUser(user);
     }
 
+    @PostMapping("/addUserToGroup")
+    public ExecutionResult addUserToGroup(@RequestParam String username, @RequestParam String groupname) {
+        return psService.addUserToGroup(username, groupname);
+    }
+
     @PostMapping("/deleteUser")
-    public ExecutionResult deleteUser(@RequestBody User user) {
-        return null;
+    public ExecutionResult deleteUser(@RequestParam String username) {
+        return psService.deleteUser(username);
+    }
+
+    @GetMapping("/checkWorkdirExist")
+    public ExecutionResult checkGroupExist(@RequestParam String username) {
+        return psService.getWorkdirName(username);
+    }
+
+    @GetMapping("/checkUserExist")
+    public ExecutionResult checkUserExist(@RequestParam String username) {
+        return psService.getUsername(username);
     }
 
     @GetMapping("/listUsers")
     public ExecutionResult listUsers() {
-        return null;
+        return psService.listUsers();
     }
 
     @PostMapping("/runProcess")
