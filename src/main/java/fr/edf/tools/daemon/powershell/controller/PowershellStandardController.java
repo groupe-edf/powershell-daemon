@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.edf.tools.daemon.powershell.PowershellService;
 import fr.edf.tools.daemon.powershell.model.ExecutionResult;
-import fr.edf.tools.daemon.powershell.model.ProcessRun;
+import fr.edf.tools.daemon.powershell.model.JnlpProcess;
 import fr.edf.tools.daemon.powershell.model.User;
 import fr.edf.tools.daemon.powershell.utils.Constants;
 
@@ -26,39 +26,52 @@ public class PowershellStandardController {
         return psService.executePsCommand(Constants.WHOAMI, false);
     }
 
-    @PostMapping("/createUser")
+    @PostMapping("/user/create")
     public ExecutionResult createUser(@RequestBody User user) {
-        return psService.createUser(user);
+        return psService.executePsCommand(
+                String.format(Constants.CREATE_USER, user.getUsername(), user.getPassword(), user.getUsername()),
+                false);
     }
 
-    @PostMapping("/addUserToGroup")
+    @PostMapping("/user/group/add")
     public ExecutionResult addUserToGroup(@RequestParam String username, @RequestParam String groupname) {
-        return psService.addUserToGroup(username, groupname);
+        return psService.executePsCommand(String.format(Constants.ADD_USER_TO_GROUP, groupname, username), false);
     }
 
-    @PostMapping("/deleteUser")
+    @PostMapping("/user/delete")
     public ExecutionResult deleteUser(@RequestParam String username) {
-        return psService.deleteUser(username);
+        return psService.executePsCommand(String.format(Constants.DELETE_USER, username), false);
     }
 
-    @GetMapping("/checkWorkdirExist")
+    @PostMapping("/user/process/stop")
+    public ExecutionResult stopUserProcess(@RequestParam String username) {
+        return psService.executePsCommand(String.format(Constants.STOP_USER_PROCESS, username), false);
+    }
+
+    @GetMapping("/user/workdir")
     public ExecutionResult checkGroupExist(@RequestParam String username) {
-        return psService.getWorkdirName(username);
+        return psService.executePsCommand(String.format(Constants.CHECK_WORKDIR_EXIST, username), false);
     }
 
-    @GetMapping("/checkUserExist")
+    @GetMapping("/user")
     public ExecutionResult checkUserExist(@RequestParam String username) {
-        return psService.getUsername(username);
+        return psService.executePsCommand(String.format(Constants.CHECK_USER_EXIST, username), false);
     }
 
-    @GetMapping("/listUsers")
+    @GetMapping("/users/list")
     public ExecutionResult listUsers() {
-        return psService.listUsers();
+        return psService.executePsCommand(Constants.LIST_USERS, false);
     }
 
-    @PostMapping("/runProcess")
-    public ExecutionResult runProcess(@RequestBody ProcessRun processRun) {
-        return null;
+    @GetMapping("/remoting")
+    public ExecutionResult getRemoting(@RequestParam String remotingUrl) {
+        return psService.executePsCommand(String.format(Constants.GET_REMOTING_JAR, remotingUrl), false);
+    }
+
+    @PostMapping("/jnlp")
+    public ExecutionResult runJnlp(@RequestBody JnlpProcess jnlpProcess) {
+        return psService.executePsCommand(String.format(Constants.LAUNCH_JNLP, jnlpProcess.getJenkinsUrl(),
+                jnlpProcess.getUsername(), jnlpProcess.getSecret()), false);
     }
 
 }

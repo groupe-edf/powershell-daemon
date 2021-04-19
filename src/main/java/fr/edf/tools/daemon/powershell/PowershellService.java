@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import fr.edf.tools.daemon.powershell.model.ExecutionResult;
-import fr.edf.tools.daemon.powershell.model.User;
 import fr.edf.tools.daemon.powershell.utils.Constants;
 
 /**
@@ -25,88 +24,6 @@ import fr.edf.tools.daemon.powershell.utils.Constants;
 public class PowershellService {
 
     private static final Logger logger = LoggerFactory.getLogger(PowershellService.class);
-
-    /**
-     * Get username if exist
-     * 
-     * @param username
-     * @return
-     */
-    public ExecutionResult getUsername(String username) {
-        return executePsCommand(String.format(Constants.CHECK_USER_EXIST, username), false);
-    }
-
-    /**
-     * Get workdir name of the given user if exist
-     * 
-     * @param username
-     * @return
-     */
-    public ExecutionResult getWorkdirName(String username) {
-        return executePsCommand(String.format(Constants.CHECK_WORKDIR_EXIST, username), false);
-    }
-
-    /**
-     * Create the given user and add it to "Remote Management Users"
-     * 
-     * @param user : {@link User} to create
-     * @return {@link ExecutionResult}
-     */
-    public ExecutionResult createUser(User user) {
-        return executePsCommand(
-                String.format(Constants.CREATE_USER, user.getUsername(), user.getPassword(), user.getUsername()),
-                false);
-    }
-
-    /**
-     * Add the given user to the given group
-     * 
-     * @param username
-     * @param groupname
-     * @return
-     */
-    public ExecutionResult addUserToGroup(String username, String groupname) {
-        return executePsCommand(String.format(Constants.ADD_USER_TO_GROUP, groupname, username), false);
-    }
-
-    /**
-     * Stop all process for the given user
-     * 
-     * @param username
-     * @return
-     */
-    public ExecutionResult stopUserProcess(String username) {
-        return executePsCommand(String.format(Constants.STOP_USER_PROCESS, username), false);
-    }
-
-    /**
-     * Delete the user with the given username
-     * 
-     * @param username
-     * @return
-     */
-    public ExecutionResult deleteUser(String username) {
-        return executePsCommand(String.format(Constants.DELETE_USER, username), false);
-    }
-
-    /**
-     * Delete the workir of the given username
-     * 
-     * @param username
-     * @return
-     */
-    public ExecutionResult deleteUserWorkdir(String username) {
-        return executePsCommand(String.format(Constants.REMOVE_WORKDIR, username), false);
-    }
-
-    /**
-     * List all users
-     * 
-     * @return
-     */
-    public ExecutionResult listUsers() {
-        return executePsCommand(Constants.LIST_USERS, false);
-    }
 
     /**
      * Execute the given PowerShell command
