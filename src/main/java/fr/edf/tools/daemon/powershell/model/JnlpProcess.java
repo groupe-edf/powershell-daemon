@@ -4,27 +4,27 @@ public class JnlpProcess {
 
     private final String jenkinsUrl;
 
-    private final String username;
-
     private final String secret;
 
-    public JnlpProcess(String jenkinsUrl, String username, String secret) {
+    private final User user;
+
+    public JnlpProcess(String jenkinsUrl, String username, String secret, User user) {
         super();
         this.jenkinsUrl = jenkinsUrl;
-        this.username = username;
         this.secret = secret;
+        this.user = user;
     }
 
     public String getJenkinsUrl() {
         return jenkinsUrl;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public String getSecret() {
         return secret;
+    }
+
+    public User getUser() {
+        return user;
     }
 
 }
