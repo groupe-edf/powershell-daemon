@@ -67,7 +67,7 @@ public class PowershellStandardController {
         return psService.executePsCommand(Constants.REMOVE_ORPHANED_PROFIL, false);
     }
 
-    @GetMapping("/user/remoting")
+    @PostMapping("/user/remoting")
     public ExecutionResult getRemoting(@RequestParam String remotingUrl, @RequestBody User user) {
         String remotingCommand = String.format(Constants.GET_REMOTING_JAR, remotingUrl);
         return psService.executePsCommand(String.format(Constants.START_PROCESS_RUN_AS, user.getUsername(),
