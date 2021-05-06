@@ -2,6 +2,7 @@ package fr.edf.tools.daemon.powershell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -39,28 +40,27 @@ public class PowershellService {
         Integer exitCode;
         String uncompiledCommand = encoded ? uncompilePs(command) : command;
         command = encoded ? command : compilePs(command);
-        logger.info("Executing command {} ...", uncompiledCommand);
         if (!System.getProperty(Constants.OS_PROPERTY).contains(Constants.WINDOWS)) {
             return new ExecutionResult(1, "", "PowerShell daemon is not installed on a Windows machine");
         }
         try {
             // Getting the version
             // Executing the command
+            logger.info("Executing command {} ...", uncompiledCommand);
             Process powerShellProcess = Runtime.getRuntime().exec("powershell -encodedcommand " + command);
             // Getting the results
+            logger.trace("Get exit code");
             exitCode = powerShellProcess.waitFor();
+            logger.trace("Get outputStream");
             powerShellProcess.getOutputStream().close();
 
             // Get Standard Output
-            BufferedReader stdout = new BufferedReader(new InputStreamReader(powerShellProcess.getInputStream()));
-            output = stdout.lines().collect(Collectors.joining("\n"));
-            stdout.close();
+            output = safetyReadInputStream(powerShellProcess.getInputStream());
             logger.debug("Standard Output: \n {}", output);
 
             // Get Error Output
-            BufferedReader stderr = new BufferedReader(new InputStreamReader(powerShellProcess.getErrorStream()));
-            error = stderr.lines().collect(Collectors.joining("\n"));
-            stderr.close();
+            logger.trace("Get outputStream");
+            error = safetyReadInputStream(powerShellProcess.getErrorStream());
             logger.debug("Standard Error: \n {}", error);
 
             logger.info("Command {} executed !", uncompiledCommand);
@@ -98,6 +98,54 @@ public class PowershellService {
     private String compilePs(String psScript) {
         byte[] cmd = psScript.getBytes(StandardCharsets.UTF_16LE);
         return Base64.getEncoder().encodeToString(cmd);
+    }
+
+    /**
+     * Return the given InputStream as String <br>
+     * Avoid potential blocking Thread when reading the InputStream
+     * 
+     * @param in : the given InputStream
+     * @return String value of in
+     * @throws InterruptedException
+     */
+    private String safetyReadInputStream(InputStream in) throws InterruptedException {
+        InputStreamReaderThread inputStreamReaderThread = new InputStreamReaderThread();
+        inputStreamReaderThread.setIn(in);
+        inputStreamReaderThread.start();
+        inputStreamReaderThread.join(5000); // 5 seconds max to read the InputStream
+        inputStreamReaderThread.interrupt();
+        return inputStreamReaderThread.getResult();
+    }
+
+    /**
+     * Thread to read an InputStream and have the control on potential blocking
+     * issue
+     * 
+     * @author Mathieu Delrocq
+     *
+     */
+    private class InputStreamReaderThread extends Thread {
+
+        private InputStream in;
+        private String result = "";
+
+        public String getResult() {
+            return result;
+        }
+
+        public void setIn(InputStream in) {
+            this.in = in;
+        }
+
+        public void run() {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            result += reader.lines().collect(Collectors.joining("\n"));
+            try {
+                reader.close();
+            } catch (IOException e) {
+                logger.debug("Cannot close the reader but it will be deleted with the Thread {}", this.getName());
+            }
+        }
     }
 
 }
