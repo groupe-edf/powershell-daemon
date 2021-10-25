@@ -13,7 +13,7 @@
 
   <groupId>fr.edf.tools</groupId>
   <artifactId>powershell-daemon</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>powershell-daemon</name>
   <description>Expose web services to execute specifics powershell commands</description>
 

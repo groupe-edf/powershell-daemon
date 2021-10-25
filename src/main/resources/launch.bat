@@ -1,1 +1,1 @@
-java -jar powershell-daemon-0.0.1-SNAPSHOT.jar
+java -jar powershell-daemon-1.0.0.jar
