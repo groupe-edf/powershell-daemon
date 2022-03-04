@@ -76,8 +76,8 @@ public class PowershellStandardController {
 
     @PostMapping("/user/jnlp")
     public ExecutionResult runJnlp(@RequestBody JnlpProcess jnlpProcess) {
-        String jnlpCommand = String.format(Constants.LAUNCH_JNLP, jnlpProcess.getJenkinsUrl(),
-                jnlpProcess.getUser().getUsername(), jnlpProcess.getSecret());
+        String jnlpCommand = String.format(Constants.LAUNCH_JNLP, jnlpProcess.getAgentJvmParameters(),
+                jnlpProcess.getJenkinsUrl(), jnlpProcess.getUser().getUsername(), jnlpProcess.getSecret());
         return psService
                 .executePsCommand(
                         String.format(Constants.START_PROCESS_RUN_AS, jnlpProcess.getUser().getUsername(),

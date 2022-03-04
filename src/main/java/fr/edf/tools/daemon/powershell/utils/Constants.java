@@ -63,7 +63,7 @@ public final class Constants {
 
     public static final String CHECK_USER_EXIST = "(Get-LocalUser | Where-Object {$_.Name -eq '%s'}).name";
 
-    public static final String LAUNCH_JNLP = "java -jar remoting.jar -jnlpUrl %scomputer/%s/slave-agent.jnlp -secret %s";
+    public static final String LAUNCH_JNLP = "java %s -jar remoting.jar -jnlpUrl %scomputer/%s/slave-agent.jnlp -secret %s";
 
     public static final String LIST_USERS = "(Get-LocalUser | Where-Object {$_.Name -match \"windows-*\"}).name";
 
