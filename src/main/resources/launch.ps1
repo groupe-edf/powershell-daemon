@@ -1,1 +1,1 @@
-Start-Process powershell -ArgumentList 'java -jar powershell-daemon-1.0.0.jar' -WindowStyle 'Hidden' -Verb RunAs
+Start-Process powershell -ArgumentList 'java -jar powershell-daemon-1.0.1.jar' -WindowStyle 'Hidden' -Verb RunAs

@@ -1,1 +1,1 @@
-java -jar powershell-daemon-1.0.0.jar
+java -jar powershell-daemon-1.0.1.jar
